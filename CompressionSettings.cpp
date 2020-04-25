@@ -87,7 +87,7 @@ void CompressionSettings::onRarPath()
                 "*.exe"
             #else
                 tr("Select the rar executable"),
-                _ui->rarPathLE->text(),
+                _ui->rarPathLE->text()
             #endif
                 );
 
