@@ -35,7 +35,7 @@
 #include <QDesktopServices>
 #include <QUrl>
 
-const QString ScenePacker::sDonationURL = "https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=W2C236U6JNTUA&item_name=ex0days&currency_code=EUR";
+const QString ScenePacker::sDonationURL = "https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=W2C236U6JNTUA&item_name=scenePacker&currency_code=EUR";
 
 const QMap<ScenePacker::Param, QString> ScenePacker::sParamNames =
 {
@@ -113,7 +113,7 @@ ScenePacker::ScenePacker(int &argc, char *argv[]):
     if (!_settings->value(sParamNames[Param::CmdRar]).isValid())
     {
 #if defined(WIN32) || defined(__MINGW64__)
-        _settings->setValue(sParamNames[Param::CmdRar], "select 'Rar.exe' inside Winrar directory");
+//        _settings->setValue(sParamNames[Param::CmdRar], "select 'Rar.exe' inside Winrar directory");
 #else
         _settings->setValue(sParamNames[Param::CmdRar], "/usr/bin/rar");
 #endif
@@ -140,9 +140,6 @@ ScenePacker::ScenePacker(int &argc, char *argv[]):
 ScenePacker::~ScenePacker()
 {
     _clear();
-
-    if (_hmi)
-        delete _hmi;
 
     _settings->sync();
     delete _settings;
@@ -388,7 +385,11 @@ void ScenePacker::processFolders(const QStringList &srcFolders)
     {
         _log(tr("<b>There are no items to compress...</b>"));
         if (_hmi)
+        {
+            _hmi->setProgressMax(1);
+            _hmi->setProgress(0);
             _hmi->setIDLE();
+        }
         else
             qApp->quit();
     }

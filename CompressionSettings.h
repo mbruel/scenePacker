@@ -53,6 +53,9 @@ public:
     bool lockArchive() const;
     int compressLevel() const;
 
+public slots:
+    void onRarPath();
+
 
 private:
     Ui::CompressionSettings *_ui;

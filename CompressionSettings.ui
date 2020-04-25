@@ -34,7 +34,7 @@
           </size>
          </property>
          <property name="toolTip">
-          <string>full path of unrar</string>
+          <string>full path of rar</string>
          </property>
         </widget>
        </item>
@@ -63,7 +63,7 @@
      <item row="0" column="0">
       <widget class="QCheckBox" name="genNameCB">
        <property name="toolTip">
-        <string>generate a random name for the archive</string>
+        <string>generate a random name for each archive</string>
        </property>
        <property name="text">
         <string>generate random name</string>
@@ -104,7 +104,7 @@
        <item>
         <widget class="QCheckBox" name="splitCB">
          <property name="toolTip">
-          <string>generate a random name for the archive</string>
+          <string/>
          </property>
          <property name="text">
           <string>split archive with volume size:</string>
@@ -114,7 +114,7 @@
        <item>
         <widget class="QSpinBox" name="splitSB">
          <property name="toolTip">
-          <string>length of the random archive name</string>
+          <string>volume size</string>
          </property>
          <property name="maximum">
           <number>999</number>
@@ -139,7 +139,7 @@
      <item row="1" column="0">
       <widget class="QCheckBox" name="genPassCB">
        <property name="toolTip">
-        <string>generate a random password for the archive or use the fixed one</string>
+        <string>generate a random password for each archive</string>
        </property>
        <property name="text">
         <string>generate random password</string>
@@ -177,7 +177,7 @@
        <item>
         <widget class="QCheckBox" name="fixedPassCB">
          <property name="toolTip">
-          <string>use the same password for all the archives</string>
+          <string>use a fixeed password for all the archives</string>
          </property>
          <property name="text">
           <string>use a fixed password:</string>
@@ -190,7 +190,7 @@
           <bool>false</bool>
          </property>
          <property name="toolTip">
-          <string>password used in your archive that would also be added in the header of the nzb file</string>
+          <string/>
          </property>
         </widget>
        </item>
@@ -203,7 +203,7 @@
           </size>
          </property>
          <property name="toolTip">
-          <string>generate random password</string>
+          <string>generate a random password</string>
          </property>
          <property name="text">
           <string/>
@@ -218,6 +218,9 @@
      </item>
      <item row="2" column="0">
       <widget class="QCheckBox" name="redundancyCB">
+       <property name="toolTip">
+        <string>WinRar -rr option</string>
+       </property>
        <property name="text">
         <string>add recovery records (%): </string>
        </property>
@@ -246,6 +249,9 @@
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
         <widget class="QCheckBox" name="lockCB">
+         <property name="toolTip">
+          <string>Winrar -k option</string>
+         </property>
          <property name="text">
           <string>lock archive</string>
          </property>
@@ -274,7 +280,7 @@
        <item>
         <widget class="QSpinBox" name="levelSB">
          <property name="toolTip">
-          <string>length of the random archive name</string>
+          <string>level must be between 0 and 5</string>
          </property>
          <property name="maximum">
           <number>5</number>

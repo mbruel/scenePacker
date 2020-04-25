@@ -66,8 +66,8 @@ MainWindow::MainWindow(QWidget *parent)
     _ui->srcList->setSelectionMode(QAbstractItemView::ExtendedSelection);
     connect(_ui->srcList, &SignedListWidget::rightClick, this, &MainWindow::onAddSrc);
 
-    connect(_ui->packInDestRB, &QAbstractButton::toggled, this, &MainWindow::onPackInDstFolder);
-    connect(_ui->packInSrcRB,  &QAbstractButton::toggled, this, &MainWindow::onPackInSrcFolder);
+    connect(_ui->packInDestRB, &QAbstractButton::clicked, this, &MainWindow::onPackInDstFolder);
+    connect(_ui->packInSrcRB,  &QAbstractButton::clicked, this, &MainWindow::onPackInSrcFolder);
 
     statusBar()->addPermanentWidget(_progressBar, 2);
 }
@@ -103,12 +103,12 @@ void MainWindow::init(ScenePacker *app)
     if (_app->useDestinationFolder())
     {
         _ui->packInDestRB->setChecked(true);
-        onPackInDstFolder(true);
+        onPackInDstFolder();
     }
     else
     {
         _ui->packInSrcRB->setChecked(true);
-        onPackInSrcFolder(true);
+        onPackInSrcFolder();
     }
     onDispCompressionPaths(_app->dispSettings());
 
@@ -228,14 +228,14 @@ void MainWindow::onDispCompressionPaths(bool display)
     _ui->compressionBox->setVisible(display);
 }
 
-void MainWindow::onPackInDstFolder(bool checked)
+void MainWindow::onPackInDstFolder()
 {
     _ui->dstLbl->setText(tr("Destination Folder:"));
     _ui->dstLE->setText(_app->dstPath());
     _ui->dstButton->show();
 }
 
-void MainWindow::onPackInSrcFolder(bool checked)
+void MainWindow::onPackInSrcFolder()
 {
     _ui->dstLbl->setText(tr("Rar sub Folder:"));
     _ui->dstLE->setText(_app->rarFolder());

@@ -25,6 +25,7 @@
 #include <QCommandLineOption>
 #include <QTextStream>
 #include <QQueue>
+#include <QVector>
 #include <QFileInfo>
 #include <QElapsedTimer>
 #include <QSettings>

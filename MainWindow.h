@@ -70,8 +70,8 @@ public slots:
     void onDebugToggled(bool checked);
     void onDstPath();
     void onDispCompressionPaths(bool display);
-    void onPackInDstFolder(bool checked);
-    void onPackInSrcFolder(bool checked);
+    void onPackInDstFolder();
+    void onPackInSrcFolder();
 
 protected:
     void dragEnterEvent(QDragEnterEvent *e) override;
