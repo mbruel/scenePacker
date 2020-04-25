@@ -190,12 +190,7 @@ private:
 
     static const QString sASCII;
 
-    static const QRegularExpression sRegExpArchiveExtensions;
-    static const QRegularExpression sRegExpArchiveFiles;
-    static const QRegularExpression sRegExpNumberOne;
-
     static const QString sDonationURL;
-
 
 public:
     inline static QString desc(bool useHTML = false);

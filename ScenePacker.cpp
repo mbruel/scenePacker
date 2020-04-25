@@ -26,7 +26,6 @@
 #include <QProcess>
 #include <QThread>
 #include <QCommandLineParser>
-#include <QRegularExpression>
 #include <QDir>
 #include <QTime>
 #include <cmath>
@@ -85,10 +84,6 @@ const QList<QCommandLineOption> ScenePacker::sCmdOptions = {
 
 
 const QStringList ScenePacker::sRarDefaultArgs = {"a", "-ep1"};
-
-const QRegularExpression ScenePacker::sRegExpArchiveExtensions = QRegularExpression("^.*\\.(rar|ace|arj)$");
-const QRegularExpression ScenePacker::sRegExpArchiveFiles      = QRegularExpression("^.*\\.(part)?(([rac])?\\d+)(\\.rar)?$");
-const QRegularExpression ScenePacker::sRegExpNumberOne         = QRegularExpression("^0*1$");
 
 
 ScenePacker::ScenePacker(int &argc, char *argv[]):
@@ -375,7 +370,7 @@ void ScenePacker::processFolders(const QStringList &srcFolders)
         {
             QProcess *extProc = new QProcess();
             connect(extProc, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
-                    this, &ScenePacker::onProcFinished);
+                    this, &ScenePacker::onProcFinished, Qt::QueuedConnection); // queued to avoid stack overflow
 
             _extProcs << extProc;
             _processNextFolder(extProc);
