@@ -120,12 +120,13 @@ ScenePacker::ScenePacker(int &argc, char *argv[]):
         setThreads(QThread::idealThreadCount()/2);
         setRarFolder("_rar");
         setRarPrefix("RAR_");
+        setDispSettings(true);
     }
 
     if (_settings->value(sParamNames[Param::LogPerRun]).isValid())
         _logPerRun = _settings->value(sParamNames[Param::LogPerRun]).toBool();
 
-    if (_logPerRun && !QFileInfo(sLogFolder).exists())
+    if (!QFileInfo(sLogFolder).exists())
         QDir(".").mkdir(sLogFolder);
 
 
@@ -325,7 +326,7 @@ void ScenePacker::processFolders(const QStringList &srcFolders)
                     QDateTime::currentDateTime().toString("yyyyMMdd_hhmmss"));
     else
     {
-        logFileName = QString("./%1_history.csv").arg(sAppName);
+        logFileName = QString("./%1/%2_history.csv").arg(sLogFolder).arg(sAppName);
         openMode |= QIODevice::Append;
     }
 
