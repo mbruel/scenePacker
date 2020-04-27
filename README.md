@@ -1,4 +1,4 @@
-# scenePacker
+# scenePacker v1.0
 
 **Command line / GUI tool that packs every files/folders of the input folders individually using RAR**<br/>
 <br/>
@@ -10,13 +10,11 @@ you can:
   - lock the archive (-k Rar option)
   - add recovery records (-rr Rar option)
   - set the compression level (from 0 to 5)
-<br/>
+
 An history log will be maintained or you can generate a separate log for each execution using the config logPerRun.
-
-
-<br />
+<br /><br />
 I've built only a Win32 release on Windows7. It should be compatible with all versions of Windows (from win7)<br/>
-You can either use <a href="https://github.com/mbruel/scenePacker/releases/download/v1.2/scenePacker_v1.2_x64_setup.exe">the installer</a> or <a href="https://github.com/mbruel/scenePacker/releases/download/v1.2/scenePacker_v1.2_win64.zip">the portable version</a><br/>
+You can either use [the installer](https://github.com/mbruel/scenePacker/releases/download/v1.0/scenePacker_v1.0_x64_setup.exe) or <a href="https://github.com/mbruel/scenePacker/releases/download/v1.2/scenePacker_v1.2_win64.zip">the portable version</a><br/>
 <br />
 
 ### How to build
