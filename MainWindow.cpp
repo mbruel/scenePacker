@@ -184,6 +184,15 @@ void MainWindow::onLaunch()
         if (!_updateParams())
             return;
 
+        QFileInfo rarFI(_app->rarPath());
+        if (!rarFI.exists() || !rarFI.isExecutable())
+        {
+            QMessageBox::warning(nullptr,
+                                 tr("Rar software missing..."),
+                                 tr("Please provide the path of Rar!"));
+            return;
+        }
+
         QStringList folders;
         for (int i = 0 ; i < _ui->srcList->count() ; ++i)
             folders << _ui->srcList->item(i)->text();

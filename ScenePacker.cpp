@@ -575,7 +575,14 @@ void ScenePacker::_processNextFolder(QProcess *extProc)
         if (debug())
             _log(QString("%1 %2").arg(rarPath()).arg(args.join(" ")));
         else
-            _log(tr("Compressing %1").arg(fi.absoluteFilePath()));
+        {
+            QString msg = tr("- Compressing %1").arg(fi.absoluteFilePath());
+            if (genName())
+                msg += tr(" to %1").arg(archiveName);
+            if (!pass.isEmpty())
+                msg += tr(" with pass: %1").arg(pass);
+            _log(msg);
+        }
 
         extProc->setProperty(sPropertySrcFolder,   fi.absoluteFilePath());
         extProc->setProperty(sPropertyDstFolder,   dstFolder);
