@@ -60,6 +60,7 @@ const QMap<ScenePacker::Param, QString> ScenePacker::sParamNames =
 
     {Param::Debug,         "debug"},
     {Param::DispSettings,  "dispPaths"},
+    {Param::LogPerRun,     "logPerRun"},
     {Param::Help,          "help"},
     {Param::Version,       "version"}
 };
@@ -97,7 +98,8 @@ ScenePacker::ScenePacker(int &argc, char *argv[]):
     _settings(nullptr),
     _stopProcess(false),
     _logFile(nullptr), _logStream(),
-    _useWinrar(false)
+    _useWinrar(false),
+    _logPerRun(false)
 {
 #if defined(__MINGW32__) || defined(__MINGW64__)
     _settings = new QSettings(QString("%1.ini").arg(appName()), QSettings::Format::IniFormat);
@@ -120,7 +122,10 @@ ScenePacker::ScenePacker(int &argc, char *argv[]):
         setRarPrefix("RAR_");
     }
 
-    if (!QFileInfo(sLogFolder).exists())
+    if (_settings->value(sParamNames[Param::LogPerRun]).isValid())
+        _logPerRun = _settings->value(sParamNames[Param::LogPerRun]).toBool();
+
+    if (_logPerRun && !QFileInfo(sLogFolder).exists())
         QDir(".").mkdir(sLogFolder);
 
 
@@ -309,14 +314,30 @@ int ScenePacker::startHMI()
 void ScenePacker::processFolders(const QStringList &srcFolders)
 {
     _stopProcess = false;
-    _logFile = new QFile(QString("./%1/%2_%3.csv").arg(
-                             sLogFolder).arg(
-                             appName()).arg(
-                             QDateTime::currentDateTime().toString("yyyyMMdd_hhmmss")));
-    if (_logFile->open(QIODevice::WriteOnly|QIODevice::Text))
+
+    QIODevice::OpenMode openMode = QIODevice::WriteOnly|QIODevice::Text;
+
+    QString logFileName;
+    if (_logPerRun)
+        logFileName = QString("./%1/%2_%3.csv").arg(
+                    sLogFolder).arg(
+                    sAppName).arg(
+                    QDateTime::currentDateTime().toString("yyyyMMdd_hhmmss"));
+    else
+    {
+        logFileName = QString("./%1_history.csv").arg(sAppName);
+        openMode |= QIODevice::Append;
+    }
+
+    bool logFileExists = QFileInfo(logFileName).exists();
+    _logFile = new QFile(logFileName);
+    if (_logFile->open(openMode))
     {
         _logStream.setDevice(_logFile);
-        _logStream << "source;destination\n" << flush;
+        if (_logPerRun)
+            _logStream << "source;destination;archive name;password\n" << flush;
+        else if (!logFileExists)
+            _logStream << "date;source;destination;archive name;password\n" << flush;
     }
     else
     {
@@ -519,10 +540,13 @@ void ScenePacker::_processNextFolder(QProcess *extProc)
         args << QString("-m%1").arg(compressLevel());
 
         // 2.: is there a password?
+        QString pass;
         if (genPass())
-            args << QString("-hp%1").arg(_randomStr(lengthPass()));
+            pass = _randomStr(lengthPass());
         else if (useFixedPass() && !fixedPass().isEmpty())
-            args << QString("-hp%1").arg(fixedPass());
+            pass = fixedPass();
+        if (!pass.isEmpty())
+            args << QString("-hp%1").arg(pass);
 
         // 3.: shall we split into several volumes
         if (splitArchive() && splitSize() > 0)
@@ -541,8 +565,9 @@ void ScenePacker::_processNextFolder(QProcess *extProc)
             args << QString("-rr%1p").arg(recoveryPct());
 
         // 7.: destination
+        QString archiveName = _archiveName(fi);
         dstFolder = QString("%1/%2").arg(_dstDir->absolutePath()).arg(dstFolder);
-        args << QString("%1/%2").arg(dstFolder).arg(_archiveName(fi));
+        args << QString("%1/%2").arg(dstFolder).arg(archiveName);
 
         // 8.: add the entry
         args << fi.absoluteFilePath();
@@ -552,8 +577,10 @@ void ScenePacker::_processNextFolder(QProcess *extProc)
         else
             _log(tr("Compressing %1").arg(fi.absoluteFilePath()));
 
-        extProc->setProperty(sPropertyDstFolder, dstFolder);
-        extProc->setProperty(sPropertySrcFolder, fi.absoluteFilePath());
+        extProc->setProperty(sPropertySrcFolder,   fi.absoluteFilePath());
+        extProc->setProperty(sPropertyDstFolder,   dstFolder);
+        extProc->setProperty(sPropertyArchiveName, archiveName.left(archiveName.size()-4)); // remove ".rar"
+        extProc->setProperty(sPropertyPassword,    pass);
         extProc->start(rarPath(), args);
     }
 }
@@ -585,8 +612,15 @@ void ScenePacker::onProcFinished(int exitCode)
             _error(tr("Error removing broken folder %1").arg(dstFolder));
     }
     else
+    {
+        if (!_logPerRun)
+            _logStream << QDateTime::currentDateTime().toString("yyyy/MM/dd hh:mm:ss") << ";";
         _logStream << extProc->property(sPropertySrcFolder).toString() << ";"
-                   << dstFolder << "\n" << flush;
+                   << dstFolder << ";"
+                   << extProc->property(sPropertyArchiveName).toString() << ";"
+                   << extProc->property(sPropertyPassword).toString()
+                   << endl << flush;
+    }
 
 
     _processNextFolder(extProc);
@@ -619,7 +653,7 @@ void ScenePacker::_syntax(char *appName)
 void ScenePacker::_logTimeElapsed()
 {
     int duration = static_cast<int>(_timeStart.elapsed());
-    double sec = (double)duration/1000;
+    double sec = static_cast<double>(duration)/1000.;
 
     _log(tr("<br/><b> => %1/%2 entries compressed in %3 sec (%4)</b>").arg(
              _nbCompressed).arg(_nbTotal).arg(
@@ -737,6 +771,7 @@ void ScenePacker::saveSettings(bool genName,
     _settings->setValue(sParamNames[Param::RecoveryPct],  recoveryPct);
     _settings->setValue(sParamNames[Param::LockArchive],  lockArchive);
     _settings->setValue(sParamNames[Param::CompressLevel],compressLevel);
+    _settings->setValue(sParamNames[Param::LogPerRun],    _logPerRun);
 }
 
 const QString ScenePacker::sASCII = "\

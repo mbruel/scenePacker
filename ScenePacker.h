@@ -44,6 +44,7 @@ public:
                              SplitArchive, SplitSize,
                              LockArchive, CompressLevel,
                              Debug, DispSettings,
+                             LogPerRun,
                              Help, Version
                             };
 
@@ -71,6 +72,7 @@ private:
     QTextStream         _logStream;
 
     bool                _useWinrar;
+    bool                _logPerRun;
 
 
 public:
@@ -180,8 +182,10 @@ private:
 
     static constexpr const char *sLogFolder = "./logs";
 
-    static constexpr const char *sPropertyDstFolder = "dstFolder";
-    static constexpr const char *sPropertySrcFolder = "srcFolder";
+    static constexpr const char *sPropertyDstFolder   = "dstFolder";
+    static constexpr const char *sPropertySrcFolder   = "srcFolder";
+    static constexpr const char *sPropertyArchiveName = "archiveName";
+    static constexpr const char *sPropertyPassword    = "password";
 
 
     static const QMap<Param, QString>      sParamNames;
