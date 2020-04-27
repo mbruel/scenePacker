@@ -178,7 +178,7 @@ private:
 
     static constexpr const char *sAppName   = "scenePacker";
     static constexpr const char *sVersion   = "1.0";
-    static constexpr const char *sDesc      = "pack files/folders recursively";
+    static constexpr const char *sDesc      = "pack files/folders individually";
 
     static constexpr const char *sLogFolder = "./logs";
 
