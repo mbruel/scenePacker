@@ -2,6 +2,8 @@
 
 **Command line / GUI tool that packs every files/folders of the input folders individually using RAR**<br/>
 <br/>
+![scenePacker](https://raw.githubusercontent.com/mbruel/scenePacker/master/pics/scenePacker_v1.0.png)
+<br/>
 The archives will either be in ONE destination folder or inside a 'rar subfolder' of each inputs<br/>
 you can:
   - generate a random name for the archives and set its length
