@@ -17,7 +17,7 @@ you can:
 An history log will be maintained or you can generate a separate log for each execution using the config **logPerRun**.
 <br /><br />
 I've built only a Win32 release on Windows7. It should be compatible with all versions of Windows (from win7)<br/>
-You can either use [the installer](https://github.com/mbruel/scenePacker/releases/download/v1.0/scenePacker_v1.0_x64_setup.exe) or [the portable version](https://github.com/mbruel/scenePacker/releases/download/v1.2/scenePacker_v1.2_win64.zip)<br/>
+You can either use [the installer](https://github.com/mbruel/scenePacker/releases/download/v1.0/scenePacker_v1.0_setup.exe) or [the portable version](https://github.com/mbruel/scenePacker/releases/download/v1.0/scenePacker_v1.0_win32.zip)<br/>
 <br />
 
 ### How to build
