@@ -11,7 +11,7 @@ you can:
   - add recovery records (-rr Rar option)
   - set the compression level (from 0 to 5)
 
-An history log will be maintained or you can generate a separate log for each execution using the config logPerRun.
+An history log will be maintained or you can generate a separate log for each execution using the config **logPerRun**.
 <br /><br />
 I've built only a Win32 release on Windows7. It should be compatible with all versions of Windows (from win7)<br/>
 You can either use [the installer](https://github.com/mbruel/scenePacker/releases/download/v1.0/scenePacker_v1.0_x64_setup.exe) or [the portable version](https://github.com/mbruel/scenePacker/releases/download/v1.2/scenePacker_v1.2_win64.zip)<br/>
