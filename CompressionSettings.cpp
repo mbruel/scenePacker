@@ -25,7 +25,7 @@
 
 CompressionSettings::CompressionSettings(QWidget *parent) :
     QGroupBox(parent),
-    _ui(new Ui::CompressionSettings)
+    _ui(new Ui::CompressionSettings), _app(nullptr)
 {
     _ui->setupUi(this);
 
@@ -38,6 +38,9 @@ CompressionSettings::CompressionSettings(QWidget *parent) :
 #endif
 
     connect(_ui->rarPathButton,  &QAbstractButton::clicked, this, &CompressionSettings::onRarPath);
+    connect(_ui->genPassCB,      &QAbstractButton::toggled, this, &CompressionSettings::onGenPass);
+    connect(_ui->fixedPassCB,    &QAbstractButton::toggled, this, &CompressionSettings::onFixedPass);
+    connect(_ui->fixedPassButton,&QAbstractButton::clicked, this, &CompressionSettings::onGenFixedPass);
 }
 
 CompressionSettings::~CompressionSettings()
@@ -46,8 +49,10 @@ CompressionSettings::~CompressionSettings()
 }
 
 void CompressionSettings::init(ScenePacker *app)
-{
+{    
+    _app = app;
     _ui->rarPathLE->setText(app->rarPath());
+    _ui->sfvCB->setChecked(app->genSfv());
     _ui->genNameCB->setChecked(app->genName());
     _ui->nameLengthSB->setValue(app->lengthName());
     _ui->genPassCB->setChecked(app->genPass());
@@ -63,6 +68,7 @@ void CompressionSettings::init(ScenePacker *app)
 }
 
 QString CompressionSettings::rarPath()       const { return _ui->rarPathLE->text(); }
+bool    CompressionSettings::genSfv()        const { return _ui->sfvCB->isChecked(); }
 bool    CompressionSettings::genName()       const { return _ui->genNameCB->isChecked(); }
 int     CompressionSettings::lengthName()    const { return _ui->nameLengthSB->value(); }
 bool    CompressionSettings::genPass()       const { return _ui->genPassCB->isChecked(); }
@@ -93,4 +99,27 @@ void CompressionSettings::onRarPath()
 
     if (!file.isEmpty())
         _ui->rarPathLE->setText(file);
+}
+
+void CompressionSettings::onGenPass(bool checked)
+{
+    if (checked)
+    {
+        _ui->fixedPassCB->setChecked(false);
+        onFixedPass(false);
+    }
+}
+
+void CompressionSettings::onFixedPass(bool checked)
+{
+    if (checked)
+        _ui->genPassCB->setChecked(false);
+
+    _ui->fixedPassLE->setEnabled(checked);
+    _ui->fixedPassButton->setEnabled(checked);
+}
+
+void CompressionSettings::onGenFixedPass()
+{
+    _ui->fixedPassLE->setText(_app->randomStr(_ui->passLengthSB->value()));
 }

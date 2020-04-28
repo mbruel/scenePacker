@@ -162,6 +162,7 @@ void MainWindow::saveParams()
         _app->setRarFolder(_ui->dstLE->text());
 
     _app->saveSettings(
+                _ui->compressionBox->genSfv(),
                 _ui->compressionBox->genName(),
                 _ui->compressionBox->lengthName(),
                 _ui->compressionBox->genPass(),

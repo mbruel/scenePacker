@@ -20,6 +20,7 @@
 //========================================================================
 
 #include "ScenePacker.h"
+#include "Crc32.h"
 #include "MainWindow.h"
 #include "About.h"
 #include <QApplication>
@@ -45,6 +46,7 @@ const QMap<ScenePacker::Param, QString> ScenePacker::sParamNames =
     {Param::RarFolder,     "rarFolder"},
     {Param::Threads,       "threads"},
     {Param::RarPrefix,     "rarPrefix"},
+    {Param::GenSfv,        "sfv"},
     {Param::GenName,       "genName"},
     {Param::LengthName,    "lengthName"},
     {Param::GenPass,       "genPass"},
@@ -77,6 +79,7 @@ const QList<QCommandLineOption> ScenePacker::sCmdOptions = {
     {{"s", sParamNames[Param::SplitSize]},   tr("split archive into volume of that size (in MB)"), sParamNames[Param::SplitSize]},
     {{"r", sParamNames[Param::RecoveryPct]}, tr("percentage of recovery records to add to the archives (Winrar -rr option)"), sParamNames[Param::RecoveryPct]},
     {{"l", sParamNames[Param::LockArchive]}, tr("lock archives (Winrar -k option)")},
+    { sParamNames[Param::GenSfv],            tr("generate sfv file for each archive")},
     { sParamNames[Param::GenName],           tr("generate random name for each archive")},
     { sParamNames[Param::GenPass],           tr("generate random password for each archive")},
     { sParamNames[Param::LengthName],        tr("length of the random name"), sParamNames[Param::LengthName]},
@@ -215,8 +218,9 @@ bool ScenePacker::parseCommandLine(int argc, char *argv[])
         setRarFolder(parser.value(sParamNames[Param::RarFolder]));
 
 
-    _settings->setValue(sParamNames[Param::GenName], parser.isSet(sParamNames[Param::GenName]));
-    _settings->setValue(sParamNames[Param::GenPass], parser.isSet(sParamNames[Param::GenPass]));
+    _settings->setValue(sParamNames[Param::GenSfv],      parser.isSet(sParamNames[Param::GenSfv]));
+    _settings->setValue(sParamNames[Param::GenName],     parser.isSet(sParamNames[Param::GenName]));
+    _settings->setValue(sParamNames[Param::GenPass],     parser.isSet(sParamNames[Param::GenPass]));
     _settings->setValue(sParamNames[Param::LockArchive], parser.isSet(sParamNames[Param::LockArchive]));
 
     if (parser.isSet(sParamNames[Param::FixedPass]))
@@ -543,7 +547,7 @@ void ScenePacker::_processNextFolder(QProcess *extProc)
         // 2.: is there a password?
         QString pass;
         if (genPass())
-            pass = _randomStr(lengthPass());
+            pass = randomStr(lengthPass());
         else if (useFixedPass() && !fixedPass().isEmpty())
             pass = fixedPass();
         if (!pass.isEmpty())
@@ -621,19 +625,39 @@ void ScenePacker::onProcFinished(int exitCode)
     }
     else
     {
+        QString archiveName = extProc->property(sPropertyArchiveName).toString();
         if (!_logPerRun)
             _logStream << QDateTime::currentDateTime().toString("yyyy/MM/dd hh:mm:ss") << ";";
         _logStream << extProc->property(sPropertySrcFolder).toString() << ";"
                    << dstFolder << ";"
-                   << extProc->property(sPropertyArchiveName).toString() << ";"
+                   << archiveName << ";"
                    << extProc->property(sPropertyPassword).toString()
                    << endl << flush;
+
+        if (genSfv())
+            _createSfv(dstFolder, archiveName);
     }
 
 
     _processNextFolder(extProc);
 }
 
+void ScenePacker::_createSfv(const QString &folder, const QString &sfvFileName)
+{
+    QString sfvPath = QString("%1/%2.sfv").arg(folder).arg(sfvFileName);
+    QFile sfvFile(sfvPath);
+    if (sfvFile.open(QIODevice::WriteOnly|QIODevice::Text))
+    {
+        QTextStream stream(&sfvFile);
+        QDir dir(folder);
+        for (const QFileInfo &fi : dir.entryInfoList({"*.rar"}, QDir::Files|QDir::NoSymLinks,  QDir::Name))
+            stream << fi.fileName() << " "
+                   << QString("%1").arg(Crc32::getCRC32(fi.absoluteFilePath()), 8, 16, QChar('0'))
+                   << endl;
+    }
+    else
+        _error(tr("Error creating sfv file %1").arg(sfvPath));
+}
 
 void ScenePacker::_syntax(char *appName)
 {
@@ -650,7 +674,7 @@ void ScenePacker::_syntax(char *appName)
     _cout << "\n"
           << "Examples: \n"
           << "  1.: using dst path:   " << appName << " -i ~/Downloads/folder1 -i ~/Downloads/folder2 -o /tmp/archives --genName --genPass --lengthPass 17\n"
-          << "  2.: using rar folder: " << appName << " -i ~/Downloads/folder1 -i ~/Downloads/folder2 -x _rar\n"
+          << "  2.: using rar folder: " << appName << " -i ~/Downloads/folder1 -i ~/Downloads/folder2 -x _rar --sfv\n"
           << endl
           << "The first example will create all archives from both folder1 and folder2 inside the destination folder /tmp/archives\n"
           << "The second example, will create a '_rar' folder in both folder1 et folder2 with their respective archives\n"
@@ -754,7 +778,8 @@ void ScenePacker::setDebug(bool debug) { _settings->setValue(sParamNames[Param::
 void ScenePacker::setDispSettings(bool disp) { _settings->setValue(sParamNames[Param::DispSettings], disp); }
 void ScenePacker::setUseDestinationFolder(bool useDstFolder) { _settings->setValue(sParamNames[Param::DstChoice], useDstFolder); }
 
-void ScenePacker::saveSettings(bool genName,
+void ScenePacker::saveSettings(bool genSfv,
+                               bool genName,
                                int lengthName,
                                bool genPass,
                                int lengthPass,
@@ -767,6 +792,7 @@ void ScenePacker::saveSettings(bool genName,
                                bool lockArchive,
                                int compressLevel)
 {
+    _settings->setValue(sParamNames[Param::GenSfv],       genSfv);
     _settings->setValue(sParamNames[Param::GenName],      genName);
     _settings->setValue(sParamNames[Param::LengthName],   lengthName);
     _settings->setValue(sParamNames[Param::GenPass],      genPass);

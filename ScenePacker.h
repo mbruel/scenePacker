@@ -38,7 +38,7 @@ class ScenePacker : public QObject, public CmdOrGuiApp
 public:
     enum class Param : char {CmdRar =0, DstPath, RarFolder, SrcFolder,
                              DstChoice, Threads, RarPrefix,
-                             GenName, LengthName,
+                             GenSfv, GenName, LengthName,
                              GenPass, LengthPass, UseFixedPass, FixedPass,
                              AddRecovery, RecoveryPct,
                              SplitArchive, SplitSize,
@@ -74,7 +74,6 @@ private:
     bool                _useWinrar;
     bool                _logPerRun;
 
-
 public:
     explicit ScenePacker(int &argc, char *argv[]);
     ~ScenePacker() override;
@@ -99,7 +98,8 @@ public:
     void setUseDestinationFolder(bool useDstFolder);
 
 
-    void saveSettings(bool genName = true,
+    void saveSettings(bool genSfv = true,
+                      bool genName = true,
                       int  lengthName = 31,
                       bool genPass = true,
                       int  lengthPass = 21,
@@ -113,6 +113,7 @@ public:
                       int  compressLevel = 0);
 
 
+    inline QString randomStr(int length) const;
 
     inline int     threads()       const;
     inline QString srcFolder()     const;
@@ -122,6 +123,7 @@ public:
     inline DstChoice dstChoice()   const;
     inline bool    useDestinationFolder() const;
     inline QString rarFolder()     const;
+    inline bool    genSfv()        const;
     inline bool    genName()       const;
     inline int     lengthName()    const;
     inline bool    genPass()       const;
@@ -161,13 +163,12 @@ private:
     void _error(const QString &msg);
 
     void _clear();
+    void _createSfv(const QString &folder, const QString &sfvFileName);
 
     void _logTimeElapsed();
 
     inline void _showVersionASCII();
-    void _syntax(char *appName);
-
-    inline QString _randomStr(int length) const;
+    void _syntax(char *appName);    
 
     bool _allProcessesDone() const;
 
@@ -177,7 +178,7 @@ private:
     // statics
 
     static constexpr const char *sAppName   = "scenePacker";
-    static constexpr const char *sVersion   = "1.0";
+    static constexpr const char *sVersion   = "1.1";
     static constexpr const char *sDesc      = "pack files/folders individually";
 
     static constexpr const char *sLogFolder = "./logs";
@@ -214,7 +215,7 @@ void ScenePacker::_showVersionASCII()
     _cout << asciiArtWithVersion() << "\n\n" << flush;
 }
 
-QString ScenePacker::_randomStr(int length) const
+QString ScenePacker::randomStr(int length) const
 {
     if (length < 5)
         length = 5;
@@ -240,7 +241,7 @@ QString ScenePacker::desc(bool useHTML)
             tr("The archives will either be in ONE destination folder or inside a 'rar subfolder' of each inputs")).arg(
             tr("you can generate a random name for the archives and set its length")).arg(
             tr("idem for the password but you can also use a fixed one for all the archives")).arg(
-            tr("split the archives into several volumes, lock it, add recovery records...")).arg(
+            tr("split the archives into several volumes, lock them, add recovery records, generate sfv files...")).arg(
             tr("for more details, cf %1").arg(
                     useHTML ? "<a href=\"https://github.com/mbruel/scenePacker/\">https://github.com/mbruel/scenePacker</a>"
                             : "https://github.com/mbruel/scenePacker"));}
@@ -261,6 +262,7 @@ bool    ScenePacker::useDestinationFolder() const { return dstChoice() == DstCho
 QString ScenePacker::rarFolder()     const { return _settings->value(sParamNames[Param::RarFolder]).toString(); }
 bool    ScenePacker::genName()       const { return _settings->value(sParamNames[Param::GenName]).toBool(); }
 int     ScenePacker::lengthName()    const { return _settings->value(sParamNames[Param::LengthName]).toInt(); }
+bool    ScenePacker::genSfv()        const { return _settings->value(sParamNames[Param::GenSfv]).toBool(); }
 bool    ScenePacker::genPass()       const { return _settings->value(sParamNames[Param::GenPass]).toBool(); }
 int     ScenePacker::lengthPass()    const { return _settings->value(sParamNames[Param::LengthPass]).toInt(); }
 bool    ScenePacker::useFixedPass()  const { return _settings->value(sParamNames[Param::UseFixedPass]).toBool(); }
@@ -286,7 +288,7 @@ QString ScenePacker::_dstFolderForEntry(const QFileInfo &fi)
 QString ScenePacker::_archiveName(const QFileInfo &fi)
 {
     if (genName())
-        return QString("%1.rar").arg(_randomStr(lengthName()));
+        return QString("%1.rar").arg(randomStr(lengthName()));
     else
         return QString("%1.rar").arg(fi.isDir() ? fi.fileName() : fi.completeBaseName());
 }

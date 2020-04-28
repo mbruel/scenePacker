@@ -1,4 +1,4 @@
-# scenePacker v1.0
+# scenePacker v1.1
 
 **Command line / GUI tool that packs every files/folders of the input folders individually using RAR**<br/>
 <br/>
@@ -10,6 +10,7 @@ you can:
   - generate a random name for the archives and set its length
   - generate a random password or use a fixed one for all the archives
   - split the archives into several volumes
+  - generate sfv files
   - lock the archive (-k Rar option)
   - add recovery records (-rr Rar option)
   - set the compression level (from 0 to 5)
@@ -38,7 +39,7 @@ you can copy it somewhere in your PATH so it will be accessible from anywhere
 
 ### How to use it in command line
 <pre>
-Syntax: scenePacker (options)* (-i <src_folder>)+ (-o <dst_path>| -x <rar_folder>)
+Syntax: scenePacker (options)* (-i &lt;src_folder&gt;)+ (-o &lt;dst_path&gt;| -x &lt;rar_folder&gt;)
 	-h or --help       : Help: display syntax
 	-v or --version    : app version
 	-i or --input      : source folder (can use several -i)
@@ -50,14 +51,15 @@ Syntax: scenePacker (options)* (-i <src_folder>)+ (-o <dst_path>| -x <rar_folder
 	-s or --volSize    : split archive into volume of that size (in MB)
 	-r or --recPct     : percentage of recovery records to add to the archives (Winrar -rr option)
 	-l or --lock       : lock archives (Winrar -k option)
+	--sfv              : generate sfv file for each archive
 	--genName          : generate random name for each archive
 	--genPass          : generate random password for each archive
 	--lengthName       : length of the random name
 	--lengthPass       : length of the random password
 
 Examples:
-  1.: using dst path:   scenePacker -i ~/Downloads/folder1 -i ~/Downloads/folder2 -o /tmp/archives --genName --genPass --lengthPass 17
-  2.: using rar folder: scenePacker -i ~/Downloads/folder1 -i ~/Downloads/folder2 -x _rar
+  1.: using dst path:   ../build-scenePacker-Desktop_Qt_5_14_1_GCC_64bit-Debug/scenePacker -i ~/Downloads/folder1 -i ~/Downloads/folder2 -o /tmp/archives --genName --genPass --lengthPass 17
+  2.: using rar folder: ../build-scenePacker-Desktop_Qt_5_14_1_GCC_64bit-Debug/scenePacker -i ~/Downloads/folder1 -i ~/Downloads/folder2 -x _rar --sfv
 
 The first example will create all archives from both folder1 and folder2 inside the destination folder /tmp/archives
 The second example, will create a '_rar' folder in both folder1 et folder2 with their respective archives

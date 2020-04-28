@@ -19,52 +19,21 @@
 //
 //========================================================================
 
-#ifndef COMPRESSIONSETTINGS_H
-#define COMPRESSIONSETTINGS_H
+#ifndef CRC32_H
+#define CRC32_H
+#include "PureStaticClass.h"
+#include <QtGlobal>
 
-#include <QGroupBox>
-class ScenePacker;
+#define CRC32_BUFSIZE 65536
 
-namespace Ui {
-class CompressionSettings;
-}
-
-class CompressionSettings : public QGroupBox
+class Crc32 : public PureStaticClass
 {
-    Q_OBJECT
-
 public:
-    explicit CompressionSettings(QWidget *parent = nullptr);
-    ~CompressionSettings();
-
-    void init(ScenePacker *app);
-
-    QString rarPath() const;
-    bool genSfv() const;
-    bool genName() const;
-    int  lengthName() const;
-    bool genPass() const;
-    int  lengthPass() const;
-    bool useFixedPass() const;
-    QString fixedPass() const;
-    bool splitArchive() const;
-    int splitSize() const;
-    bool addRecovery() const;
-    int recoveryPct() const;
-    bool lockArchive() const;
-    int compressLevel() const;
-
-public slots:
-    void onRarPath();
-    void onGenPass(bool checked);
-    void onFixedPass(bool checked);
-    void onGenFixedPass();
+    static quint32 getCRC32(const QString &filePath);
 
 private:
-    Ui::CompressionSettings *_ui;
-    ScenePacker             *_app;
+    static char crc32_buf[CRC32_BUFSIZE];
+    static const quint32 crc32_tab[256];
 };
 
-
-
-#endif // COMPRESSIONSETTINGS_H
+#endif // CRC32_H

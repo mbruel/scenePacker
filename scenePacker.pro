@@ -40,6 +40,7 @@ SOURCES += \
     About.cpp \
     CmdOrGuiApp.cpp \
     CompressionSettings.cpp \
+    Crc32.cpp \
     ScenePacker.cpp \
     SignedListWidget.cpp \
     main.cpp \
@@ -49,6 +50,8 @@ HEADERS += \
     About.h \
     CmdOrGuiApp.h \
     CompressionSettings.h \
+    Crc32.h \
+    PureStaticClass.h \
     ScenePacker.h \
     MainWindow.h \
     SignedListWidget.h
