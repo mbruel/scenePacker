@@ -2,7 +2,7 @@
 
 **Command line / GUI tool that packs every files/folders of the input folders individually using RAR**<br/>
 <br/>
-![scenePacker](https://raw.githubusercontent.com/mbruel/scenePacker/master/pics/scenePacker_v1.0.png)
+![scenePacker](https://raw.githubusercontent.com/mbruel/scenePacker/master/pics/scenePacker_v1.1.png)
 <br/><br/>
 The archives will either be in ONE destination folder or inside a 'rar subfolder' of each inputs<br/>
 you can:
@@ -18,7 +18,7 @@ you can:
 An history log will be maintained or you can generate a separate log for each execution using the config **logPerRun**.
 <br /><br />
 I've built only a Win32 release on Windows7. It should be compatible with all versions of Windows (from win7)<br/>
-You can either use [the installer](https://github.com/mbruel/scenePacker/releases/download/v1.0/scenePacker_v1.0_setup.exe) or [the portable version](https://github.com/mbruel/scenePacker/releases/download/v1.0/scenePacker_v1.0_win32.zip)<br/>
+You can either use [the installer](https://github.com/mbruel/scenePacker/releases/download/v1.1/scenePacker_v1.1_setup.exe) or [the portable version](https://github.com/mbruel/scenePacker/releases/download/v1.1/scenePacker_v1.1_win32.zip)<br/>
 <br />
 
 ### How to build
